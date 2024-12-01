@@ -18,19 +18,34 @@
             <button id="showPerspectiveTransform">Show Scan Document</button>
             <div id="predictionResult">
             {% if processed_image %}
-                <img src="{{ url_for('static', filename='saved_image/' + processed_image) }}" alt="Processed OMR Sheet" style="width: 200px; height: 200px; display: block; margin-left: auto; margin-right: auto;">
+                <img src="{{ url_for('static', filename='saved_image/' + processed_image) }}" alt="Processed OMR Sheet" style="width: 320px; height: 400px; display: block; margin-left: auto; margin-right: auto;">
             {% else %}
                 <p>No processed image available.</p>
             {% endif %}
             </div>
             </form>
             <div id="confidenceContainer" class="confidence-section">
-                <h2>Detected answer</h2>
-                <br>
-                {% for label, confidence in prediction %}
-                <li>{{ label }} :   {{ confidence }}</li>
-                {% endfor %}
-                {{index}}
+                <h2>Detected and Corrected Answers</h2>
+    <br>
+    <table border="1" style="width: 100%; text-align: left; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Detected Answer</th>
+                <th>original Answer</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for question, detected_answer in prediction %}
+            <tr>
+                <td>{{ question }}</td>
+                <td>{{ detected_answer }}</td>
+                <td>{{ index.get(question, 'Not available') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+     <p>Overall detected score: {{score | round(2)}}%</p>
             </div>
           
             </div>

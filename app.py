@@ -52,7 +52,7 @@ def omr_perspective_show():
    
     
 
-    return render_template('omr_upload.html',processed_image=processed_filename,prediction=prediction,index=ans)
+    return render_template('omr_upload.html',processed_image=processed_filename,prediction=prediction,index=ans,score=score)
 @app.route('/static/saved_image/<filename>')
 def serve_image(filename):
     return send_from_directory(app.config['IMAGE_FOLDER'], filename)

@@ -136,7 +136,8 @@ def grader(image_path):
    gray = cv2.cvtColor(ques_25, cv2.COLOR_BGR2GRAY)
    blurred = cv2.GaussianBlur(gray, (5,5), 0)
    sharpened = cv2.filter2D(blurred, -1, sharpen_kernel)
-   _, thresh_q_25 = cv2.threshold(sharpened, 140, 255, cv2.THRESH_BINARY_INV)
+   _, thresh_q_25 = cv2.threshold(sharpened, 120, 255, cv2.THRESH_BINARY_INV)
+   
    height, width = thresh_q_25.shape[:2] 
 
    boxes=splitboxes(thresh_q_25)
