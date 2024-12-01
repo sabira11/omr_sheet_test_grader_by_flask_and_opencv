@@ -1,7 +1,12 @@
 
+# ... Currently, the code is designed to detect MCQ answers for the first 25 questions, 
+# which are located in the first rectangular answer box. In the future,
+#  I will integrate a method to detect MCQ answers from all four separate answer boxes simultaneously
 import numpy as np
 import argparse
 import cv2
+#....function for finding the 4 largest countour which is rectengular in size.
+#  Here the 4 separate answer sheet will be selected separately 
 def rectCountour(countours):
     rectCon=[]
     for i in countours:
@@ -18,7 +23,7 @@ def rectCountour(countours):
     rectCon=sorted(rectCon,key=cv2.contourArea,reverse=True) 
     
     return rectCon
-# .... Code for getting the all corners point
+# .... Code for getting the all corners point for the every selected biggest contour area
 def getCornesPts(big_con):
    peri=cv2.arcLength(big_con,True)
    approx=cv2.approxPolyDP(big_con,0.02*peri,True)
@@ -34,7 +39,10 @@ def order_points(pts):
         rect[1] = pts[np.argmin(diff)]  # Top-right
         rect[3] = pts[np.argmax(diff)]  # Bottom-left
         return rect
-
+#To process the image containing 25 questions arranged in a rectangular format, the following steps will be taken:
+# The thresholded image will be divided vertically into 25 rows, where each row corresponds to a separate question.
+#Each row will then be split horizontally to isolate the individual answer choices for that specific question.
+#This approach ensures that each question and its corresponding answer choices are segmented accurately for further processing.
 def splitboxes(img):
     height, width = img.shape[:2]
     
@@ -68,7 +76,7 @@ def splitboxes(img):
                 i=i+1
  
     return boxes  
-
+# Finding out all nonzero pixel value of each cell
 def allpixelValue(questions,choice,boxes):
     pixelVal=np.zeros((questions,choice))
     countC=0
@@ -91,7 +99,7 @@ def allpixelValue(questions,choice,boxes):
 
 def grader(image_path):
    image = cv2.imread(image_path)
-#image=cv2.imread("images\omr_6_qn.webp")
+   ans_part=image.copy()
    original = image.copy()
    image_con= image.copy()
    doc_corners=""
@@ -162,6 +170,25 @@ def grader(image_path):
 
    score=(correct/total)*100
    print("score: ",score,"%")
+   extreme_x_min = float('inf')
+   extreme_x_max = float('-inf')
+   extreme_y_min = float('inf')
+   extreme_y_max = float('-inf')
+
+   for contour in rectCon:
+    # Extract the bounding box of the contour
+       x, y, w, h = cv2.boundingRect(contour)
+    # Update the extreme coordinates
+       extreme_x_min = min(extreme_x_min, x)
+       extreme_x_max = max(extreme_x_max, x + w)
+       extreme_y_min = min(extreme_y_min, y)
+       extreme_y_max = max(extreme_y_max, y + h)
+   print(extreme_x_min,extreme_x_max,extreme_y_min,extreme_y_max)
+   combined_image = ans_part[extreme_y_min:extreme_y_max, extreme_x_min:extreme_x_max]
+
+# Display or save the combined image
+   cv2.imshow("Combined Image", combined_image)
+   cv2.waitKey(0)
    return score,ans,index
 
 score,ans,index= grader("static\saved_image\scanned_document2.jpg")
