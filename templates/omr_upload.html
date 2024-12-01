@@ -15,13 +15,27 @@
                 <img id="previewImg" src="" alt="Image Preview">
             </div>
            
-            <button id="showPerspectiveTransform">show image</button>
+            <button id="showPerspectiveTransform">Show Scan Document</button>
             <div id="predictionResult">
-                {{ image_path }}
-                <img src="{{ url_for('static', filename='saved_image/' + processed_image) }}" alt="Processed OMR Sheet" style="width: 200px;height: 200 px;display: block; margin-left: auto; margin-right: auto;">
-                
-               
+            {% if processed_image %}
+                <img src="{{ url_for('static', filename='saved_image/' + processed_image) }}" alt="Processed OMR Sheet" style="width: 200px; height: 200px; display: block; margin-left: auto; margin-right: auto;">
+            {% else %}
+                <p>No processed image available.</p>
+            {% endif %}
             </div>
+            </form>
+            <div id="confidenceContainer" class="confidence-section">
+                <h2>Detected answer</h2>
+                <br>
+                {% for label, confidence in prediction %}
+                <li>{{ label }} :   {{ confidence }}</li>
+                {% endfor %}
+                {{index}}
+            </div>
+          
+            </div>
+            
+
     
     
     {% if answers %}
