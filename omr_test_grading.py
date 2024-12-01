@@ -69,7 +69,7 @@ def splitboxes(img):
  
     return boxes  
 
-def allpixelValue(questions,choice):
+def allpixelValue(questions,choice,boxes):
     pixelVal=np.zeros((questions,choice))
     countC=0
     countR=0
@@ -89,87 +89,80 @@ def allpixelValue(questions,choice):
              
 
 
-
-image = cv2.imread("saved_image/scanned_document.jpg")
+def grader(image_path):
+   image = cv2.imread(image_path)
 #image=cv2.imread("images\omr_6_qn.webp")
-original = image.copy()
-image_con= image.copy()
-doc_corners=""
-questions=25
-choice=4
-ans={ 1: 1, 2: 2, 3: 2, 4: 3,5:4,6:3,7:' ',8:' ',9:2,10:3,11:4,12:3,13:' ',14:1,15:' ',16:3,17:' ',18:' ',19:2,20:' ',21:' ',22:' ',23:1,24:' ',25:' '}
+   original = image.copy()
+   image_con= image.copy()
+   doc_corners=""
+   questions=25
+   choice=4
+   ans={ 1: 1, 2: 2, 3: 2, 4: 3,5:4,6:3,7:' ',8:' ',9:2,10:3,11:4,12:3,13:' ',14:1,15:' ',16:3,17:' ',18:' ',19:2,20:' ',21:' ',22:' ',23:1,24:' ',25:' '}
 
     # Convert to grayscale
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(gray, (3,3), 0)
-sharpen_kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+   gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+   blurred = cv2.GaussianBlur(gray, (3,3), 0)
+   sharpen_kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
 
-sharpened = cv2.filter2D(blurred, -1, sharpen_kernel)
-#edged = cv2.Canny(blurred, 75, 200)
-_, thresh = cv2.threshold(sharpened, 190, 255, cv2.THRESH_BINARY_INV)
-#thresh = cv2.threshold(sharpened, 0, 255,
- #                      	cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-#cv2.imshow("thresh2",thresh)
-edges = cv2.Canny(thresh, 50, 150)
+   sharpened = cv2.filter2D(blurred, -1, sharpen_kernel)
+   _, thresh = cv2.threshold(sharpened, 190, 255, cv2.THRESH_BINARY_INV)
 
-contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-cont_img=cv2.drawContours(original, contours, -1, 255, 3)
-rectCon=rectCountour(contours)
+   edges = cv2.Canny(thresh, 50, 150)
 
-big_con=rectCon[0]
-doc_corners=getCornesPts(big_con)
+   contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+   cont_img=cv2.drawContours(original, contours, -1, 255, 3)
+   rectCon=rectCountour(contours)
+
+   big_con=rectCon[0]
+   doc_corners=getCornesPts(big_con)
 
 
-if big_con.size!=0:
-   cv2.drawContours(image_con,big_con,-1, 255, 3)
-   ordered_points = order_points(doc_corners.reshape(4, 2))
-   (tl, tr, br, bl) = ordered_points
+   if big_con.size!=0:
+      cv2.drawContours(image_con,big_con,-1, 255, 3)
+      ordered_points = order_points(doc_corners.reshape(4, 2))
+      (tl, tr, br, bl) = ordered_points
    
-   width = int(max(np.linalg.norm(br - bl), np.linalg.norm(tr - tl)))
-   height = int(max(np.linalg.norm(tr - br), np.linalg.norm(tl - bl)))
-   dst = np.array([
+      width = int(max(np.linalg.norm(br - bl), np.linalg.norm(tr - tl)))
+      height = int(max(np.linalg.norm(tr - br), np.linalg.norm(tl - bl)))
+      dst = np.array([
         [0, 0],
         [width - 1, 0],
         [width - 1, height - 1],
         [0, height - 1]
-   ], dtype="float32")
-   matrix = cv2.getPerspectiveTransform(ordered_points, dst)
-   ques_25 = cv2.warpPerspective(original, matrix, (width, height))
+       ], dtype="float32")
+      matrix = cv2.getPerspectiveTransform(ordered_points, dst)
+      ques_25 = cv2.warpPerspective(original, matrix, (width, height))
    
-gray = cv2.cvtColor(ques_25, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(gray, (5,5), 0)
-sharpened = cv2.filter2D(blurred, -1, sharpen_kernel)
-_, thresh_q_25 = cv2.threshold(sharpened, 140, 255, cv2.THRESH_BINARY_INV)
-height, width = thresh_q_25.shape[:2] 
+   gray = cv2.cvtColor(ques_25, cv2.COLOR_BGR2GRAY)
+   blurred = cv2.GaussianBlur(gray, (5,5), 0)
+   sharpened = cv2.filter2D(blurred, -1, sharpen_kernel)
+   _, thresh_q_25 = cv2.threshold(sharpened, 140, 255, cv2.THRESH_BINARY_INV)
+   height, width = thresh_q_25.shape[:2] 
 
-boxes=splitboxes(thresh_q_25)
-pixelVal=allpixelValue(questions,choice)
+   boxes=splitboxes(thresh_q_25)
+   pixelVal=allpixelValue(questions,choice,boxes)
 
 # finding index value of each correct ans
-index=[]
-for x in range(0,questions):
-    each_q=pixelVal[x]
-    index_val=np.where(each_q==np.amax(each_q))
+   index=[]
+   for x in range(0,questions):
+       each_q=pixelVal[x]
+       index_val=np.where(each_q==np.amax(each_q))
     
-    index.append(index_val[0][0])
+       index.append(index_val[0][0])
 
-total=0
-correct=0
+   total=0
+   correct=0
 # ....mapping the index with answer key.....
-for i in range (len(index)):
-    if ans[i+1]!=' ':
-        total+=1
-        if ans[i+1]==index[i]+1:
-            correct+=1
+   for i in range (len(index)):
+      if ans[i+1]!=' ':
+          total+=1
+          if ans[i+1]==index[i]+1:
+             correct+=1
 
-score=(correct/total)*100
-print("score: ",score,"%")
+   score=(correct/total)*100
+   print("score: ",score,"%")
+   return score,ans,index
 
+score,ans,index= grader("static\saved_image\scanned_document2.jpg")
+print(index)
 
-
-
-
-#cv2.imshow("thresh_q_25",thresh_q_25)
-#cv2.imshow("thresh",gray)
-#cv2.imshow("edges",edges)
-cv2.waitKey(0)
