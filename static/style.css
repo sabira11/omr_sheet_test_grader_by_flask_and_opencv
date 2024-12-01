@@ -1,0 +1,116 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f9;
+}
+.section{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    /* Aligns the form and the confidence section horizontally */
+   max-width: 1200px;
+   width: 100%;
+}
+.container {
+
+
+
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+text-align: center;
+max-width: 400px;
+width: 100%;
+margin-left: 200px;
+
+}
+.confidence-section {
+
+margin-left: 40px; /* Space between the form and the confidence scores */
+max-width: 350px;
+max-height:200 px;
+width: 100%;
+height: 100%;
+padding: 20px;
+border-radius: 10px;
+ box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+background-color: #c3d4e9;
+}
+input[type="file"] {
+max-width: 400px;
+
+} 
+#imageInput {
+
+margin-top: 10px;
+padding: 10px;
+border: 2px solid #8fb2e7;
+border-radius: 5px;
+background-color: #ffffff;
+cursor: pointer;
+color: #0d0d0e;
+width: 100%;
+max-width: 400px;
+font-weight: bold;
+box-sizing: border-box;
+
+}
+
+#imagePreview {
+margin-top: 5px;
+width: 100%;
+height: 200px;
+border: 2px dashed #9b9696;
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: #fafafa;
+}
+
+#previewImg {
+max-width: 100%;
+max-height: 100%;
+display: none;
+}
+#predictionResult {
+margin-top: 20px;
+font-size: 18px;
+font-weight: bold;
+
+text-align: left;
+}
+#showPerspectiveTransform {
+margin-top: 10px;             /* Add space above the button */
+padding: 10px 40px;  
+font-size: 15px;         /* Padding inside the button */
+border: 2px solid rgb(62, 103, 174);    /* Border color and thickness */
+background-color: rgb(109, 122, 196);     /* Button background color */
+color: rgb(6, 5, 5);                 /* Text color */
+border-radius: 5px;           /* Rounded corners */
+cursor: pointer;              /* Change cursor to pointer on hover */
+transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+width: 100%;                  /* Full width */
+max-width: 400px;          /* Optional: set a max width */
+box-sizing: border-box;
+}
+#showPerspectiveTransform:hover {
+background-color: #218838;
+}
+
+
+h1 {
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 5px 0;
+    padding: 10px;
+    background: #eaeaea;
+    border-radius: 5px;
+}

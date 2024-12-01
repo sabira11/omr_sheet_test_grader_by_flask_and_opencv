@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMR Scanner Results</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>OMR Scanner</h1>
+    <div class="section">
+        <form class="container" action="/omr_perspective_show" method='POST' enctype="multipart/form-data">
+            <input type="file" name="img" id="imageInput" accept="images/*" >
+            <div id="imagePreview">
+                <img id="previewImg" src="" alt="Image Preview">
+            </div>
+           
+            <button id="showPerspectiveTransform">show image</button>
+            <div id="predictionResult">
+                {{ image_path }}
+               
+            </div>
+       {% if processed_image %}
+            <h2>Processed Image</h2>
+            <p>{{image_path}}</p>
+            <img src="{{ url_for('serve_processed_image', filename=processed_image) }}" alt="Processed OMR Sheet" style="max-width: 100%;">
+        {% endif %}
+    
+    {% if answers %}
+    <h2>Scanned Answers:</h2>
+    <ul>
+        {% for question, answer in answers.items() %}
+            <li><strong>Question {{ question }}:</strong> {{ answer }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <script>
+        //   function resetPage() {
+               // Reset file input
+       //        document.getElementById('imageInput').value = "";
+   
+               // Hide the preview image
+       //        const previewImg = document.getElementById('previewImg');
+       //        previewImg.src = "";
+       //        previewImg.style.display = 'none';
+   
+               // Clear the prediction result
+       //        document.getElementById('predictionResult').innerHTML = "";
+       //    }
+           const imageInput = document.getElementById('imageInput');
+           const previewImg = document.getElementById('previewImg');
+           const predictButton = document.getElementById('predictButton');
+           const predictionResult = document.getElementById('predictionResult');
+   
+           // Show the uploaded image in the preview section
+           imageInput.addEventListener('change', (event) => {
+               const file = event.target.files[0];
+               if (file) {
+                   const reader = new FileReader();
+                   reader.onload = function(e) {
+                       previewImg.src = e.target.result;
+                       previewImg.style.display = 'block';
+                   };
+                   reader.readAsDataURL(file);
+               } else {
+                   previewImg.src = '';
+                   previewImg.style.display = 'none';
+               }
+           });
+    </script>
+</body>
+</html>
